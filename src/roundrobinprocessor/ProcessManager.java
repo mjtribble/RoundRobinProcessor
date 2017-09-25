@@ -30,7 +30,7 @@ public class ProcessManager {
      * This instantiates a new process manager
      * Creates a list of available processors
      * assigns and runs a given list of jobs
-     * @param stud_no 
+     * @param stud_no user specified student number
      */
     public ProcessManager(int stud_no)
     {
@@ -41,6 +41,10 @@ public class ProcessManager {
         CreateTwelveJobs();
     }
     
+    /**
+     * This creates a list of processor based on your student number
+     * @param studentNo user input student number
+     */
     private void CreateProcessors(int studentNo)
     {
         int processorNumber = (studentNo % 3) + 2;
@@ -52,31 +56,36 @@ public class ProcessManager {
         }
     }
     
+    /**
+     * This creates 1000 Jobs with random processing times
+     */
     private void CreateRandomJobs()
     {
         for(int i = 0; i< 1000; i++)
         {
-            int randomNum = ThreadLocalRandom.current().nextInt(1, 501);
-            this.jobList1.add(new Job(i, randomNum));
+            int jobNum = i+1;
+            int arrivalTime = i;
+            int randomProcessingTime = ThreadLocalRandom.current().nextInt(1, 501);
+            this.jobList1.add(new Job(jobNum, arrivalTime, randomProcessingTime));
         }
     }
     
+    /**
+     * This creates 12 jobs specified by the assignment guidelines
+     */
     private void CreateTwelveJobs()
     {
-        jobList2.add(new Job(4, 9));
-        jobList2.add(new Job(15, 2));
-        jobList2.add(new Job(18, 16));
-        jobList2.add(new Job(20, 3));
-        jobList2.add(new Job(26, 29));
-        jobList2.add(new Job(29, 198));
-        jobList2.add(new Job(35, 7));
-        jobList2.add(new Job(45, 170));
-        jobList2.add(new Job(57, 180));
-        jobList2.add(new Job(83, 178));
-        jobList2.add(new Job(88, 73));
-        jobList2.add(new Job(95, 8));
+        jobList2.add(new Job(1, 4, 9));
+        jobList2.add(new Job(2, 15, 2));
+        jobList2.add(new Job(3, 18, 16));
+        jobList2.add(new Job(4, 20, 3));
+        jobList2.add(new Job(5, 26, 29));
+        jobList2.add(new Job(6, 29, 198));
+        jobList2.add(new Job(7, 35, 7));
+        jobList2.add(new Job(8, 45, 170));
+        jobList2.add(new Job(9, 57, 180));
+        jobList2.add(new Job(10, 83, 178));
+        jobList2.add(new Job(11, 88, 73));
+        jobList2.add(new Job(12, 95, 8));
     }
-    
-    
-    
 }
