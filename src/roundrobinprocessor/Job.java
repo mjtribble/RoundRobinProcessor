@@ -24,6 +24,7 @@ public class Job {
         this.jobNumber = num;
         this.arrivalTime = arrive;
         this.processingTime = processing;
+        this.finishTime = -1;
     }
     
     /**

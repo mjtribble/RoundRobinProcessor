@@ -6,7 +6,6 @@
 package roundrobinprocessor;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -18,13 +17,22 @@ public class ProcessManager {
     /**
      * This is the list of processor's available for jobs
      */
-    private List<Processor> processorList; 
+    private final ArrayList<Processor> processorList; 
 
     /**
-     * This is the list of jobs to be processed
+     * This will hold the 1000 randomly generated jobs
      */ 
-    private List<Job> jobList1;
-    private List<Job> jobList2;
+    private final ArrayList<Job> jobList1;
+    
+    /**
+     * This will hold the 12 hard coded jobs for testing purposes
+     */
+    private final ArrayList<Job> jobList2;
+    
+    /**
+     * This is the total number of processors determined by user input
+     */
+    private int totalProcessors;
     
     /**
      * This instantiates a new process manager
@@ -36,9 +44,40 @@ public class ProcessManager {
     {
         this.jobList1 = new ArrayList<>();
         this.jobList2 = new ArrayList<>();
+        this.processorList = new ArrayList();
         CreateProcessors(stud_no);
         CreateRandomJobs();
         CreateTwelveJobs();
+        this.Run(jobList2);
+    }
+    
+    /**
+     * This assumes the job list is sorted by arrival time. 
+     * @param jobs, the list of jobs to run
+     */
+    private void Run(ArrayList<Job> jobs)
+    {
+        Job currentJob = jobs.get(0);
+        int arrivalTime = currentJob.getArrivalTime();
+        int currentProcessor = 0;
+        System.out.println("processor = "+ currentProcessor);
+        int finishTime = this.processorList.get(0).addJob(currentJob);
+
+        for(int i = 1; i< jobs.size(); i++)
+        {
+            currentJob = jobs.get(i);
+            System.out.println("job = "+ currentJob.getJobNumber());
+            
+            currentProcessor = (currentProcessor + 1)%totalProcessors;
+            System.out.println("processor = "+ currentProcessor);
+            
+            int jobFinishTime = this.processorList.get(currentProcessor).addJob(currentJob);
+            finishTime += jobFinishTime;
+            System.out.println("Total finish time  = " + finishTime);
+        }
+        
+        System.out.println("Turnaround Time  = " + this.totalTurnaroundTime(arrivalTime, finishTime));
+        
     }
     
     /**
@@ -47,17 +86,18 @@ public class ProcessManager {
      */
     private void CreateProcessors(int studentNo)
     {
-        int processorNumber = (studentNo % 3) + 2;
-        System.out.println("Processor Number = " +  processorNumber);
+        this.totalProcessors = (studentNo % 3) + 2;
+        System.out.println("Processor Number = " +  totalProcessors);
         
-        for(int i = 0; i< processorNumber; i++)
+        for(int i = 0; i< totalProcessors; i++)
         {
+            
             this.processorList.add(new Processor());
         }
     }
     
     /**
-     * This creates 1000 Jobs with random processing times
+     * This creates 1000 Jobs with random processing times from 1-500 ms
      */
     private void CreateRandomJobs()
     {
@@ -68,6 +108,8 @@ public class ProcessManager {
             int randomProcessingTime = ThreadLocalRandom.current().nextInt(1, 501);
             this.jobList1.add(new Job(jobNum, arrivalTime, randomProcessingTime));
         }
+//        System.out.println("Random Jobs\n");
+//        this.printJobs(this.jobList1);
     }
     
     /**
@@ -87,5 +129,35 @@ public class ProcessManager {
         jobList2.add(new Job(10, 83, 178));
         jobList2.add(new Job(11, 88, 73));
         jobList2.add(new Job(12, 95, 8));
+//        System.out.println("Twelve Jobs\n");
+//        this.printJobs(this.jobList2);
+    }
+    
+    private void printJobs(ArrayList<Job> jobs)
+    {
+        for(int i = 0; i < jobs.size(); i++)
+        {
+            Job currentJob = jobs.get(i);
+            System.out.println("Job "+ currentJob.getJobNumber()
+                               +", arrives - "+ currentJob.getArrivalTime()
+                                     +", processes - " + currentJob.getProcessingTime()
+                                        + ", finishes - "+ currentJob.getfinishTime());
+        }
+    }
+    
+    private int totalTurnaroundTime(int arrival, int finish)
+    {
+        return finish - arrival;
+    }
+    
+    private ArrayList<Job> sortByArrivalTime(ArrayList<Job> jobs)
+    {
+//        Collections.sort(jobs, Ordering.natural().onResultOf(
+//    new Function<Person, String>() {
+//      public String apply(Person from) {
+//        return from.getFirstName();
+//      }
+//    }));
+        return jobs;
     }
 }
