@@ -17,42 +17,62 @@ public class Processor {
     /**
      * This is the list of jobs the processor is currently running
      */
-    private List<Job> jobs; 
+    private final List<Job> jobs; 
 
     /**
      * This is the current time. 
      * The time the last job finished and the time the new job will start.
      */
-    int currentTime;
+    private int processorClock;
     
     /**
      * This creates a new processor and List of jobs
      */    
     public Processor() {
         this.jobs = new ArrayList<>();
+        this.processorClock = 0;
     }
     
     /**
      * This adds a new job to the processor
-     * Adds 1 ms to the processing time
+     * Adds 1ms to the processing time
      * Runs the job
-     * @param j 
+     * @param j the job to be run
+     * @return integer, the job's finish time
      */
-    private void AddJob(Job j)
+    public int addJob(Job j)
     {
+        // This adds 1 second on to the processing time for the job
         j.setProcessingTime(j.getProcessingTime() + 1);   
         this.jobs.add(j);
-        RunJob(j);
+//        System.out.println("Job # " + j.getJobNumber()+ " is added");
+        return runJob(j);
     }
     
     /**
      * This runs a job till job has completed
      * Sets the job's finish time.
-     * @param j 
+     * @param j is the job to be run
+     * @return integer, finish time for the job.
      */
-    private void RunJob(Job j)
+    private int runJob(Job j)
     {
-        this.currentTime = currentTime + j.getProcessingTime();
-        j.setFinishTime(currentTime);
+        ///Check to see that the job's arrival time is less than the processors running time or if we have to wait. 
+        if(this.processorClock < j.getArrivalTime())
+        {
+            this.processorClock = j.getArrivalTime();
+        }
+        
+        // Start Job
+        j.setStartTime(processorClock);
+        System.out.println("Job #" + j.getJobNumber()+ "'s start time =  " + j.getStartTime());
+
+        //Finish Job
+        this.processorClock += j.getProcessingTime();
+        j.setFinishTime(processorClock);
+        System.out.println("Job #" + j.getJobNumber()+ "'s finish time =  " + j.getFinishTime());
+        
+        //Return to ProcessManager for next job
+        return j.getFinishTime();
     }
 }

@@ -12,7 +12,7 @@ package roundrobinprocessor;
 public class Job {
     
     // These are the job's specific times
-    private int arrivalTime, finishTime, processingTime, jobNumber;
+    private int arrivalTime, finishTime, processingTime, startTime, jobNumber;
     
     /**
      * Creates a new Job instance setting the arrival and processing times
@@ -23,7 +23,9 @@ public class Job {
     {
         this.jobNumber = num;
         this.arrivalTime = arrive;
+        this.startTime = 0;
         this.processingTime = processing;
+        this.finishTime = -1;
     }
     
     /**
@@ -79,11 +81,12 @@ public class Job {
     {
         this.arrivalTime = time;
     }
+    
     /**
      * This returns the jobs finish time
      * @return finish time
      */
-    public int getfinishTime()
+    public int getFinishTime()
     {
         return this.finishTime;
     }
@@ -95,5 +98,23 @@ public class Job {
     public void setFinishTime(int time)
     {
         this.finishTime = time;
+    }
+ 
+    /**
+     * This returns the jobs start time
+     * @return start time
+     */
+    public int getStartTime()
+    {
+        return this.startTime;
+    }
+    
+    /**
+     * This sets the job's start time
+     * @param time new start time 
+     */
+    public void setStartTime(int time)
+    {
+        this.startTime = time;
     }
 }
