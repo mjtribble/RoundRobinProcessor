@@ -86,7 +86,7 @@ public class Job {
      * This returns the jobs finish time
      * @return finish time
      */
-    public int getfinishTime()
+    public int getFinishTime()
     {
         return this.finishTime;
     }

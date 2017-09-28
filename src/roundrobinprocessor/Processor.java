@@ -63,9 +63,16 @@ public class Processor {
             this.processorClock = j.getArrivalTime();
         }
         
-        this.processorClock = processorClock + j.getProcessingTime();
+        // Start Job
+        j.setStartTime(processorClock);
+        System.out.println("Job #" + j.getJobNumber()+ "'s start time =  " + j.getStartTime());
+
+        //Finish Job
+        this.processorClock += j.getProcessingTime();
         j.setFinishTime(processorClock);
-        System.out.println("Job #" + j.getJobNumber()+ "'s finish time =  " + j.getfinishTime());
-        return j.getfinishTime();
+        System.out.println("Job #" + j.getJobNumber()+ "'s finish time =  " + j.getFinishTime());
+        
+        //Return to ProcessManager for next job
+        return j.getFinishTime();
     }
 }
