@@ -23,14 +23,14 @@ public class Processor {
      * This is the current time. 
      * The time the last job finished and the time the new job will start.
      */
-    private int currentTime;
+    private int processorClock;
     
     /**
      * This creates a new processor and List of jobs
      */    
     public Processor() {
         this.jobs = new ArrayList<>();
-        this.currentTime = 0;
+        this.processorClock = 0;
     }
     
     /**
@@ -58,13 +58,13 @@ public class Processor {
     private int runJob(Job j)
     {
         ///Check to see that the job's arrival time is less than the processors running time or if we have to wait. 
-        if(this.currentTime < j.getArrivalTime())
+        if(this.processorClock < j.getArrivalTime())
         {
-            this.currentTime = j.getArrivalTime();
+            this.processorClock = j.getArrivalTime();
         }
         
-        this.currentTime = currentTime + j.getProcessingTime();
-        j.setFinishTime(currentTime);
+        this.processorClock = processorClock + j.getProcessingTime();
+        j.setFinishTime(processorClock);
         System.out.println("Job #" + j.getJobNumber()+ "'s finish time =  " + j.getfinishTime());
         return j.getfinishTime();
     }

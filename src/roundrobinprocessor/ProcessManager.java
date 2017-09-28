@@ -71,6 +71,7 @@ public class ProcessManager {
             currentProcessor = (currentProcessor + 1)%totalProcessors;
             System.out.println("processor = "+ currentProcessor);
             
+            //*****RUN*******
             int jobFinishTime = this.processorList.get(currentProcessor).addJob(currentJob);
             finishTime += jobFinishTime;
             System.out.println("Total finish time  = " + finishTime);
