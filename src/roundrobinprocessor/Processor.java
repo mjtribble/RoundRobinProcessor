@@ -75,4 +75,9 @@ public class Processor {
         //Return to ProcessManager for next job
         return j.getFinishTime();
     }
+    
+    public void resetClock()
+    {
+        this.processorClock = 0;
+    }
 }
