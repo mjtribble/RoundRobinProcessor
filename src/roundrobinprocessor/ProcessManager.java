@@ -6,6 +6,7 @@
 package roundrobinprocessor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -32,7 +33,7 @@ public class ProcessManager {
     /**
      * This will hold the turnaround times for multiple jobs 
      */
-    private final int[] ttTimes;
+    private final double[] ttTimes;
     
     /**
      * This is the total number of processors determined by user input
@@ -53,7 +54,7 @@ public class ProcessManager {
         this.randomJobs = new ArrayList<>();
         this.jobList = new ArrayList<>();
         this.processorList = new ArrayList();
-        this.ttTimes = new int[randomRuns];
+        this.ttTimes = new double[randomRuns];
         
         // Create Processor and Job lists
         CreateProcessors(stud_no);
@@ -63,10 +64,15 @@ public class ProcessManager {
         // Run both job lists
         this.run(jobList);
         
-        for(int i = 0; i< randomRuns; i++){
+        for(int i = 0; i< randomRuns; i++)
+        {
             ttTimes[i] = this.run(randomJobs);
         }
         
+        this.min( ttTimes );
+        this.max( ttTimes );
+        int average = this.average( ttTimes );
+        this.stdDev( ttTimes, average );
         
     }
     
@@ -188,33 +194,42 @@ public class ProcessManager {
     /**
      * This calculates the minimum turnaround time
      */
-    private int min(int[] t)
+    private double min(int[]t)
     {
-        int min = Integer.MAX_VALUE;
+        Arrays.sort(t);
+        double min = t[0];
+        System.out.println("Min = " + min);
         return min;
     }
     /**
      * This calculates the average turnaround time
      */
-    private int average(int[] t)
+    private double average(int[] t)
     {
-        int average = 0;
+        double total = 0;
+        double average;
+        for(int i : t){ total += i; }
+        average = total / (t.length-1);
+        System.out.println("Average = " + average);
+
         return average;
     }
     /**
      * This calculates the maximum turnaround time
      */
-    private int max(int[] t)
+    private double max(int[] t)
     {
-        int max = Integer.MIN_VALUE;
-        return max;
+        Arrays.sort(t);
+        double max = t[t.length -1];
+        System.out.println("Max = " + max);
+        return max; 
     }
     /**
      * This calculates the standard deviation in turnaround times
      */
-    private int stdDev(int[] t)
+    private void stdDev(double[] t, double avg)
     {
-        int sd = 0;
-        return sd;
+        for(double i : t) {t[i] = Math.pow((i-avg), 2.0);}
+        System.out.println("Standard Deviation = " +  Math.sqrt(this.average(t)));
     }
 }
