@@ -40,8 +40,6 @@ public class ProcessManager {
      */
     private int totalProcessors;
     
-    
-    
     /**
      * This instantiates a new process manager
      * Creates a list of available processors
@@ -233,7 +231,9 @@ public class ProcessManager {
      */
     private void stdDev(double[] t, double avg)
     {
-        for(double i : t) {i = Math.pow((i-avg), 2.0);}
-        System.out.println("Standard Deviation = " +  Math.sqrt(this.average(t)));
+        double sd = 0;
+        for(double i : t) {sd += Math.pow((i-avg), 2.0)/t.length;}
+        sd = Math.sqrt(sd);
+        System.out.println("Standard Deviation = " + sd);
     }
 }
