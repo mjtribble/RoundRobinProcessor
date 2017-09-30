@@ -62,16 +62,19 @@ public class ProcessManager {
         CreateTwelveJobs();
         
         // Run both job lists
-        this.run(jobList);
-        
         for(int i = 0; i< randomRuns; i++)
         {
-            ttTimes[i] = this.run(randomJobs);
-        }
+            this.ttTimes[i] = this.run(jobList);
+         }
+        
+//        for(int i = 0; i< randomRuns; i++)
+//        {
+//            ttTimes[i] = this.run(randomJobs);
+//        }
         
         this.min( ttTimes );
         this.max( ttTimes );
-        int average = this.average( ttTimes );
+        double average = this.average( ttTimes );
         this.stdDev( ttTimes, average );
         
     }
@@ -80,12 +83,12 @@ public class ProcessManager {
      * This assumes the job list is sorted by arrival time. 
      * @param jobs, the list of jobs to run
      */
-    private int run(ArrayList<Job> jobs)
+    private double run(ArrayList<Job> jobs)
     {
         Job currentJob = jobs.get(0);
-        int arrivalTime = currentJob.getArrivalTime();
+        double arrivalTime = currentJob.getArrivalTime();
         int currentProcessor = 0;
-        int finishTime;
+        double finishTime;
 
         System.out.println("Number of processors = "+ currentProcessor);
         finishTime = this.processorList.get(0).addJob(currentJob);
@@ -98,13 +101,13 @@ public class ProcessManager {
             System.out.println("job # "+ currentJob.getJobNumber()+" is running on processor # "+ currentProcessor);
             
             // RUN
-            int jobFinishTime = this.processorList.get(currentProcessor).addJob(currentJob);
+            double jobFinishTime = this.processorList.get(currentProcessor).addJob(currentJob);
             finishTime = jobFinishTime>finishTime ? jobFinishTime : finishTime;
             
             System.out.println("Jobs finish time  = " + finishTime);
         }
         processorList.forEach((p) -> { p.resetClock();});
-        int turnaroundTime = this.totalTurnaroundTime(arrivalTime, finishTime);
+        double turnaroundTime = this.totalTurnaroundTime(arrivalTime, finishTime);
         System.out.println("Turnaround Time  = " + turnaroundTime);
         return turnaroundTime;
         
@@ -134,8 +137,8 @@ public class ProcessManager {
         for(int i = 0; i< 1000; i++)
         {
             int jobNum = i+1;
-            int arrivalTime = i;
-            int randomProcessingTime = ThreadLocalRandom.current().nextInt(1, 501);
+            double arrivalTime = i;
+            double randomProcessingTime = ThreadLocalRandom.current().nextInt(1, 501);
             this.randomJobs.add(new Job(jobNum, arrivalTime, randomProcessingTime));
         }
 //        System.out.println("Random Jobs\n");
@@ -175,13 +178,14 @@ public class ProcessManager {
         }
     }
     
-    private int totalTurnaroundTime(int arrival, int finish)
+    private double totalTurnaroundTime(double arrival, double finish)
     {
         return finish - arrival;
     }
     
     private ArrayList<Job> sortByArrivalTime(ArrayList<Job> jobs)
     {
+        //Arrays.sort(jobs);
 //        Collections.sort(jobs, Ordering.natural().onResultOf(
 //    new Function<Person, String>() {
 //      public String apply(Person from) {
@@ -194,7 +198,7 @@ public class ProcessManager {
     /**
      * This calculates the minimum turnaround time
      */
-    private double min(int[]t)
+    private double min(double[]t)
     {
         Arrays.sort(t);
         double min = t[0];
@@ -204,12 +208,12 @@ public class ProcessManager {
     /**
      * This calculates the average turnaround time
      */
-    private double average(int[] t)
+    private double average(double[] t)
     {
         double total = 0;
         double average;
-        for(int i : t){ total += i; }
-        average = total / (t.length-1);
+        for(double i : t){ total += i; }
+        average = total / (t.length);
         System.out.println("Average = " + average);
 
         return average;
@@ -217,7 +221,7 @@ public class ProcessManager {
     /**
      * This calculates the maximum turnaround time
      */
-    private double max(int[] t)
+    private double max(double[] t)
     {
         Arrays.sort(t);
         double max = t[t.length -1];
@@ -229,7 +233,7 @@ public class ProcessManager {
      */
     private void stdDev(double[] t, double avg)
     {
-        for(double i : t) {t[i] = Math.pow((i-avg), 2.0);}
+        for(double i : t) {i = Math.pow((i-avg), 2.0);}
         System.out.println("Standard Deviation = " +  Math.sqrt(this.average(t)));
     }
 }
