@@ -96,7 +96,10 @@ public class Processor {
         return jobArrivalTime < this.processorClock;
     }
     
-    
+    /**
+     * This resets the processor's clock
+     * Called when a job sequence is complete
+     */
     public void resetClock()
     {
         this.processorClock = 0;

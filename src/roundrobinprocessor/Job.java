@@ -15,6 +15,16 @@ public class Job implements Comparable{
     private double arrivalTime, finishTime, processingTime, loadingTime, startTime;
     private int jobNumber;
     
+     /**
+     * Creates a new Job instance
+     */
+    Job()
+    {
+        this.startTime = 0;
+        this.loadingTime = 0;
+        this.finishTime = -1;
+    }
+    
     /**
      * Creates a new Job instance setting the arrival and processing times
      * @param arrive time the job arrives to be processed

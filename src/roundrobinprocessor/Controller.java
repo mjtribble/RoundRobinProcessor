@@ -8,13 +8,16 @@ package roundrobinprocessor;
 import java.util.Scanner;
 
 /**
- *
+ * This class starts the program by accepting user input
+ * Requests student number to calculate the number of processors
+ * Requests how many times the user would like to run the Random job sequences for statistics
+ * The statistics will be printed to an output.txt file
  * @author melodytribble
  */
 public class Controller {
 
     /**
-     * @param args the command line arguments
+     * @param args none
      */
     public static void main(String[] args) 
     {
