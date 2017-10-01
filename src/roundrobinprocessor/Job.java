@@ -9,7 +9,7 @@ package roundrobinprocessor;
  * This class defines the functionality of a Job
  * @author melodytribble
  */
-public class Job {
+public class Job implements Comparable{
     
     // These are the job's specific times
     private double arrivalTime, finishTime, processingTime, loadingTime, startTime;
@@ -137,4 +137,10 @@ public class Job {
     {
         this.startTime = time;
     }
+
+    @Override
+    public int compareTo(Object o) {
+        int compareTime = (int)((Job)o).getArrivalTime();
+        return (int)this.arrivalTime - compareTime;    
+    }    
 }

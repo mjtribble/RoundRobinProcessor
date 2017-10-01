@@ -25,8 +25,10 @@ public class Processor {
      */
     private double processorClock;
     
-    
-    private double jobLoadingTime;
+    /**
+     * This holds the time it takes for the processor to load a job
+     */
+    private final double jobLoadingTime;
     
     /**
      * This creates a new processor and List of jobs
@@ -39,7 +41,7 @@ public class Processor {
     
     /**
      * This adds a new job to the processor
-     * Adds 1ms to the processing time
+     * Adds 1 ms to the processing time
      * Runs the job
      * @param j the job to be run
      * @return double, the job's finish time
@@ -60,10 +62,7 @@ public class Processor {
     private double runJob(Job j)
     {
         ///Check to see that the job's arrival time is less than the processors running time or if we have to wait. 
-        if(this.processorClock < j.getArrivalTime())
-        {
-            this.processorClock = j.getArrivalTime();
-        }
+        if(this.processorClock < j.getArrivalTime()){ this.processorClock = j.getArrivalTime();}
         
         // Start Job
         j.setStartTime(processorClock);
@@ -77,6 +76,26 @@ public class Processor {
         //Return to ProcessManager for next job
         return j.getFinishTime();
     }
+    
+    /**
+     * @return This returns the processors clock or current running time.
+     */
+    public double getClock()
+    {
+        return this.processorClock;
+    }
+    
+    /**
+     * This tests if the processor is busy based on an inquiring job's arrival time
+     * @param jobArrivalTime potential job's arrival time
+     * @return true if the processor is busy and a job cannot be immediately run
+     * false if the processor is idle and can run the job now. 
+     */
+    public boolean isBusy(double jobArrivalTime)
+    {
+        return jobArrivalTime < this.processorClock;
+    }
+    
     
     public void resetClock()
     {

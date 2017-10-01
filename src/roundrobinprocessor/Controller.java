@@ -29,5 +29,4 @@ public class Controller {
         
         ProcessManager pm = new ProcessManager(number, randomRuns);
     }
-    
 }

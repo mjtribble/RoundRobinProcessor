@@ -7,6 +7,7 @@ package roundrobinprocessor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -45,7 +46,7 @@ public class ProcessManager {
      * Creates a list of available processors
      * assigns and runs a given list of jobs
      * @param stud_no user specified student number
-     * @param randomRuns number of time to run the random jobs to get stats
+     * @param randomRuns number of time to run the random jobs to get statistics
      */
     public ProcessManager(int stud_no, int randomRuns)
     {
@@ -59,16 +60,16 @@ public class ProcessManager {
         CreateRandomJobs();
         CreateTwelveJobs();
         
-        // Run both job lists
+        // Run both job lists using the CIRCULAR method
         for(int i = 0; i< randomRuns; i++)
         {
-            this.ttTimes[i] = this.run(jobList);
+            this.ttTimes[i] = this.circularRun(jobList);
          }
         
-//        for(int i = 0; i< randomRuns; i++)
-//        {
-//            ttTimes[i] = this.run(randomJobs);
-//        }
+        for(int i = 0; i< randomRuns; i++)
+        {
+            ttTimes[i] = this.circularRun(randomJobs);
+        }
         
         this.min( ttTimes );
         this.max( ttTimes );
@@ -81,12 +82,12 @@ public class ProcessManager {
      * This assumes the job list is sorted by arrival time. 
      * @param jobs, the list of jobs to run
      */
-    private double run(ArrayList<Job> jobs)
+    private double circularRun(ArrayList<Job> jobs)
     {
         Job currentJob = jobs.get(0);
         double arrivalTime = currentJob.getArrivalTime();
-        int currentProcessor = 0;
         double finishTime;
+        int currentProcessor = 0;
 
         System.out.println("Number of processors = "+ currentProcessor);
         finishTime = this.processorList.get(0).addJob(currentJob);
@@ -104,11 +105,59 @@ public class ProcessManager {
             
             System.out.println("Jobs finish time  = " + finishTime);
         }
+        
         processorList.forEach((p) -> { p.resetClock();});
         double turnaroundTime = this.totalTurnaroundTime(arrivalTime, finishTime);
         System.out.println("Turnaround Time  = " + turnaroundTime);
         return turnaroundTime;
+    }
+    
+    /**
+     * This assumes the job list is sorted by arrival time. 
+     * @param jobs, the list of jobs to run
+     */
+    private double optimizedRun(ArrayList<Job> jobs)
+    {
+        Job currentJob = jobs.get(0);
+        Processor currentProcessor;
+        double arrivalTime = currentJob.getArrivalTime();
+        double finishTime;
+        int processorNum = 0;
+
+        System.out.println("Number of processors = "+ processorNum);
         
+        // STARTS the FIRST job on the FIRST PROCESSOR
+        finishTime = this.processorList.get(0).addJob(currentJob);
+
+        for(int i = 1; i< jobs.size(); i++)
+        {
+            // SET JOB AND PROCESSOR
+            currentJob = jobs.get(i);
+            processorNum = (processorNum + 1)%totalProcessors;
+            currentProcessor = this.processorList.get(processorNum);
+            
+            // CHECKS IF THE PROCESSOR IS BUSY
+            // if true it tries the next processor. 
+            if(currentProcessor.isBusy(currentJob.getArrivalTime()))
+            {
+                System.out.println("Processor # "+ processorNum+" is busy");
+                processorNum = (processorNum+1)%totalProcessors;
+                currentProcessor = this.processorList.get(processorNum);
+            }
+           
+            System.out.println("job # "+ currentJob.getJobNumber()+" is running on processor # "+ currentProcessor);
+            
+            // RUN
+            double jobFinishTime = this.processorList.get(processorNum).addJob(currentJob);
+            finishTime = jobFinishTime>finishTime ? jobFinishTime : finishTime;
+            
+            System.out.println("Jobs finish time  = " + finishTime);
+        }
+        
+        processorList.forEach((p) -> { p.resetClock();});
+        double turnaroundTime = this.totalTurnaroundTime(arrivalTime, finishTime);
+        System.out.println("Turnaround Time  = " + turnaroundTime);
+        return turnaroundTime;
     }
     
     /**
@@ -139,6 +188,9 @@ public class ProcessManager {
             double randomProcessingTime = ThreadLocalRandom.current().nextInt(1, 501);
             this.randomJobs.add(new Job(jobNum, arrivalTime, randomProcessingTime));
         }
+        
+        this.sortByArrivalTime(this.randomJobs);
+
 //        System.out.println("Random Jobs\n");
 //        this.printJobs(this.randomJobs);
     }
@@ -148,18 +200,21 @@ public class ProcessManager {
      */
     private void CreateTwelveJobs()
     {
-        jobList.add(new Job(1, 4, 9));
-        jobList.add(new Job(2, 15, 2));
         jobList.add(new Job(3, 18, 16));
         jobList.add(new Job(4, 20, 3));
         jobList.add(new Job(5, 26, 29));
         jobList.add(new Job(6, 29, 198));
+        jobList.add(new Job(1, 4, 9));
+        jobList.add(new Job(2, 15, 2));
         jobList.add(new Job(7, 35, 7));
         jobList.add(new Job(8, 45, 170));
         jobList.add(new Job(9, 57, 180));
         jobList.add(new Job(10, 83, 178));
         jobList.add(new Job(11, 88, 73));
         jobList.add(new Job(12, 95, 8));
+        
+        this.sortByArrivalTime(jobList);
+        
 //        System.out.println("Twelve Jobs\n");
 //        this.printJobs(this.jobList);
     }
@@ -183,13 +238,7 @@ public class ProcessManager {
     
     private ArrayList<Job> sortByArrivalTime(ArrayList<Job> jobs)
     {
-        //Arrays.sort(jobs);
-//        Collections.sort(jobs, Ordering.natural().onResultOf(
-//    new Function<Person, String>() {
-//      public String apply(Person from) {
-//        return from.getFirstName();
-//      }
-//    }));
+        Collections.sort(jobs);
         return jobs;
     }
     
@@ -203,6 +252,7 @@ public class ProcessManager {
         System.out.println("Min = " + min);
         return min;
     }
+    
     /**
      * This calculates the average turnaround time
      */
@@ -216,6 +266,7 @@ public class ProcessManager {
 
         return average;
     }
+    
     /**
      * This calculates the maximum turnaround time
      */
@@ -226,6 +277,7 @@ public class ProcessManager {
         System.out.println("Max = " + max);
         return max; 
     }
+ 
     /**
      * This calculates the standard deviation in turnaround times
      */
