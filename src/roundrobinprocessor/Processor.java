@@ -23,7 +23,12 @@ public class Processor {
      * This is the current time. 
      * The time the last job finished and the time the new job will start.
      */
-    private int processorClock;
+    private double processorClock;
+    
+    /**
+     * This holds the time it takes for the processor to load a job
+     */
+    private final double jobLoadingTime;
     
     /**
      * This creates a new processor and List of jobs
@@ -31,21 +36,20 @@ public class Processor {
     public Processor() {
         this.jobs = new ArrayList<>();
         this.processorClock = 0;
+        this.jobLoadingTime = 1;
     }
     
     /**
      * This adds a new job to the processor
-     * Adds 1ms to the processing time
+     * Adds 1 ms to the processing time
      * Runs the job
      * @param j the job to be run
-     * @return integer, the job's finish time
+     * @return double, the job's finish time
      */
-    public int addJob(Job j)
+    public double addJob(Job j)
     {
-        // This adds 1 second on to the processing time for the job
-        j.setProcessingTime(j.getProcessingTime() + 1);   
         this.jobs.add(j);
-//        System.out.println("Job # " + j.getJobNumber()+ " is added");
+        j.setLoadingTime(this.jobLoadingTime);
         return runJob(j);
     }
     
@@ -55,20 +59,17 @@ public class Processor {
      * @param j is the job to be run
      * @return integer, finish time for the job.
      */
-    private int runJob(Job j)
+    private double runJob(Job j)
     {
         ///Check to see that the job's arrival time is less than the processors running time or if we have to wait. 
-        if(this.processorClock < j.getArrivalTime())
-        {
-            this.processorClock = j.getArrivalTime();
-        }
+        if(this.processorClock < j.getArrivalTime()){ this.processorClock = j.getArrivalTime();}
         
         // Start Job
         j.setStartTime(processorClock);
         System.out.println("Job #" + j.getJobNumber()+ "'s start time =  " + j.getStartTime());
 
         //Finish Job
-        this.processorClock += j.getProcessingTime();
+        this.processorClock += j.getProcessingTime() + 1;
         j.setFinishTime(processorClock);
         System.out.println("Job #" + j.getJobNumber()+ "'s finish time =  " + j.getFinishTime());
         
@@ -76,6 +77,29 @@ public class Processor {
         return j.getFinishTime();
     }
     
+    /**
+     * @return This returns the processors clock or current running time.
+     */
+    public double getClock()
+    {
+        return this.processorClock;
+    }
+    
+    /**
+     * This tests if the processor is busy based on an inquiring job's arrival time
+     * @param jobArrivalTime potential job's arrival time
+     * @return true if the processor is busy and a job cannot be immediately run
+     * false if the processor is idle and can run the job now. 
+     */
+    public boolean isBusy(double jobArrivalTime)
+    {
+        return jobArrivalTime < this.processorClock;
+    }
+    
+    /**
+     * This resets the processor's clock
+     * Called when a job sequence is complete
+     */
     public void resetClock()
     {
         this.processorClock = 0;
